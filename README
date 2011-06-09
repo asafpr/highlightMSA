@@ -1,0 +1,5 @@
+The module highlightMSA contains a class called hMSA that hold a multiple sequence alignment read by AlignIO of BioPython
+and regions along these sequences can be painted in two colors (for now). The coloring is according to the name of the 
+sequence in the MSA file (I like to use TXID as the name) and the range of nucleotides.
+The other method in the module print this MSA to an RTF file (you will need PyRTF from http://pyrtf.sourceforge.net/) with 
+the backgrounds of the regions colored in different colors.
