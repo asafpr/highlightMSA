@@ -22,13 +22,17 @@ class hMSA(object):
         
     def addRegion(self,dict):
         '''
-        Map the regions in the dictionary to their coordinates in the MSA
-        the values in the dictionary are the from and to coordinates python style
-        (the end is actually 1-based, not 0-based like the start)
+        Map the regions in the dictionary to their coordinates in the MSA.
+        The value is a list of tupples, each with the start and end of the
+        region.
+        The values in the dictionary are the from and to coordinates python 
+        style (the end is actually 1-based, not 0-based like the start)
         '''
         dict2={}
         for key,val in dict.items():
-            dict2[key]=(self.mapGaps(key,val[0]),self.mapGaps(key,val[1]-1)+1)
+            dict2[key]=[]
+            for pos1,pos2 in val:
+                dict2[key].append((self.mapGaps(key,pos1),self.mapGaps(key,pos2-1)+1))
         self.regions.append(dict2)
         
     def locateID(self,key):
@@ -51,8 +55,10 @@ class hMSA(object):
         '''
         colorkey=0
         for i,colors in enumerate(self.regions):
-            if key in colors and pos in range(colors[key][0],colors[key][1]):
-                colorkey=(i+1)
+            if key in colors:
+                for pos1,pos2 in colors[key]:
+                    if pos in range(pos1,pos2):
+                        colorkey=(i+1)
         return colorkey
 
         
