@@ -43,11 +43,18 @@ class hMSA(object):
         aln = self.locateID(key)
         if aln:
             gpos=-1
-            seqpos=-1
+            seqpos=0
             while gpos<pos:
                 if aln[seqpos]!='-': gpos+=1
                 seqpos+=1
-            return seqpos
+            return seqpos-1
+
+    def realPos(self,key,pos):
+        '''
+        Return the real position along a sequence (remove gaps)
+        '''
+        aln=self.locateID(key)
+        if aln: return pos+1-aln.seq[:pos].count('-')
 
     def getPosColors(self,key,pos):
         '''
@@ -68,11 +75,12 @@ class hMSA(object):
             return aln[pos]
         
 
-def print2RTF(hMSA,file,txids=None,width=60):
+def print2RTF(hMSA,file,txids=None,width=40):
     '''
     print the MSA to an RTF file with some regions in different colors, as defined in the hMSA
     object. The colors are set arbitrarily to redblue and yellow, with green in the intersection
     '''
+    import txid2path
     if not txids:
         txids=hMSA.ids.keys()
     #preparing the document
@@ -88,7 +96,7 @@ def print2RTF(hMSA,file,txids=None,width=60):
         for txid in txids:
             #print the header
             p=Paragraph()
-            p.append(TEXT(txid,font=font),TAB)
+            p.append(TEXT(txid2path.getInitials(txid),font=font),TAB,TEXT(str(hMSA.realPos(txid,spos)),font=font),TAB)
             for pos in range(spos,min(spos+width,slen)):
                 p.append(Text(hMSA.getPosNuc(txid,pos),TextPS(font=font),ShadingPS(background=colors[hMSA.getPosColors(txid,pos)])))
             section.append(p)
